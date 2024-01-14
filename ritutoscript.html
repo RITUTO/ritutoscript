@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ritutoscriptコードエディター</title>
+    <button style="            padding: 10px 40px 10px 20px;
+    background-color: #4a90e2;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;" onclick="window.location.href = 'wiki.html'">wikiを見る</button>
+    <style>
+        #editor {
+            height: 400px;
+        }
+        #output {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+        #run {
+            background-color: #8e8f91;
+            color: #000000;
+            height: 350px;
+            width: 110%;
+        }
+        #log {
+            height: 300px;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        .runButton {
+            padding: 10px 40px 10px 20px;
+            background-color: #4a90e2;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            background-image: url("./run.png");
+            background-size: 20px;
+            background-repeat: no-repeat;
+            background-position: 50px center;
+            padding-right: 50px;
+        }
+        
+        .clear {
+            padding: 10px 40px 10px 20px;
+            background-color: #4a90e2;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            background-image: url("./clear.png");
+            background-size: 20px;
+            background-repeat: no-repeat;
+            background-position: 100px center;
+            padding-right: 50px;
+        }
+        .saveButton {
+            padding: 10px 40px 10px 20px;
+            background-color: #4a90e2;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .saveButton:disabled {
+            padding: 10px 40px 10px 20px;
+            background-color: #596777;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .stopButton {
+            padding: 10px 40px 10px 20px;
+            background-color: #4a90e2;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            background-image: url("./stop.png");
+            background-size: 20px;
+            background-repeat: no-repeat;
+            background-position: 70px center;
+            padding-right: 50px;
+        }
+        .loadButton {
+            padding: 10px 40px 10px 20px;
+            background-color: #4a90e2;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .runButton:hover {
+            background-color: #3461a4;
+        }
+        .saveButton:hover {
+            background-color: #3461a4;
+        }
+        .stopButton:hover {
+            background-color: #3461a4;
+        }
+        .loadButton:hover {
+            background-color: #3461a4;
+        }
+        #clear:hover {
+            background-color: #3461a4;
+        }
+    </style>
+</head>
+<body>
+<div id="editor"></div>
+<div id="output"></div>
+<script src="./runcode.js"></script>
+<script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+
+<script>
+    var 止める = false
+    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.27.0/min/vs' } });
+    require(['vs/editor/editor.main'], function() {
+
+const editor = monaco.editor.create(document.getElementById('editor'), {
+            value: [
+                'set message = hello',
+                'log |message+world',
+            ].join('\n'),
+            language: 'ritutoscript',
+        });
+
+        monaco.languages.register({
+            id: 'ritutoscript',
+            extensions: ['.rituto'],
+            aliases: ['Rituto Script', 'rituto'],
+            mimetypes: ['text/rituto']
+        });
+
+monaco.languages.setMonarchTokensProvider('ritutoscript', {
+            tokenizer: {
+        root: [
+        [/\b(wait)\b/, { token: 'wait' }],
+        [/\b(log)\b/, { token: 'keyword' }],
+        [/\b(set)\b/, { token: 'set' }],
+        [/\b(return)\b/, { token: 'return' }],
+        [/\b(stop)\b/, { token: 'stop' }],
+        [/\|([^\s|+]+)/, 'variable'],
+        [/\b(if)\b/, { token: 'if' }]
+    ],
+        
+        
+    }
+});
+
+monaco.editor.defineTheme('ritutoTheme', {
+    base: 'vs-dark',  // Fix the typo here
+    inherit: true,
+    rules: [
+    { token: 'keyword', foreground: '#800080', fontStyle: 'bold' },
+{ token: 'variable', foreground: 'FFD700' },
+{ token: 'string', foreground: 'FFFFFF' },
+{ token: 'set', foreground: '004C6D' },
+{ token: 'stop', foreground: 'ff0000' },
+{ token: 'return', foreground: 'FFD700' },
+{ token: 'if', foreground: '800080'},
+{ token: 'wait', foreground: 'FFD700' },
+
+
+    ]
+});
+var stop = false
+monaco.languages.registerCompletionItemProvider('ritutoscript', {
+            provideCompletionItems: function(model, position) {
+                const textUntilPosition = model.getValueInRange({
+                    startLineNumber: position.lineNumber,
+                    startColumn: 1,
+                    endLineNumber: position.lineNumber,
+                    endColumn: position.column
+                });
+
+                const suggestions = [];
+
+                suggestions.push({
+                    label: 'log',
+                    kind: 1,
+                    insertText: 'log ',
+                });
+
+                suggestions.push({
+                    label: 'set',
+                    kind: 1,
+                    insertText: 'set ',
+                });
+
+                suggestions.push({
+                    label: 'stop',
+                    kind: 0,
+                    insertText: 'stop',
+                });
+                suggestions.push({
+                    label: 'if',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'if',
+                });
+                suggestions.push({
+                    label: 'input ユザーが入れた文字を変数に入れれます',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'input',
+                });
+                suggestions.push({
+                    label: 'set starter element',
+                    kind: 27,
+            insertText: 'set variablename = text',
+            documentation: {
+                        value: "setのサンプル\nset variablename = text",
+                        isTrusted: true,
+            },
+                });
+                suggestions.push({
+                    label: 'if starter element',
+                    kind: 4,
+            insertText: 'if a = a {\nlog aはaです\n}\nif a ! b {\nlog aはbではありません\n}',
+                         documentation: {
+                        value: "ifのサンプル\nif a = a {\nlog aはaです\n}\nif a ! b {\nlog aはbではありません\n}",
+                        isTrusted: true,
+                },
+                });
+                        suggestions.push({
+                        label: "ramdom"+" (variable)",
+                        kind: 4,
+                        insertText: "|ramdom",
+                        documentation: {
+                        value: "set ramdom = run.js(Math.round(Math.random() * 100))",
+                        isTrusted: true,
+            },})
+            suggestions.push({
+                        label: "buttonname"+" (variable)",
+                        kind: 4,
+                        insertText: "|buttonname",
+                        documentation: {
+                        value: "set buttonname = ボタン1",
+                        isTrusted: true,
+            },})
+            suggestions.push({
+                        label: "pressspace"+" (variable)",
+                        kind: 4,
+                        insertText: "|pressspace",
+                        documentation: {
+                        value: "set pressspace = run.js(supesu)",
+                        isTrusted: true,
+            },})
+            suggestions.push({
+                        label: "buttonisclick"+" (variable)",
+                        kind: 4,
+                        insertText: "|buttonisclick",
+                        documentation: {
+                        value: "set buttonisclick = run.js(buttonisclick)",
+                        isTrusted: true,
+            },})
+                const code = editor.getValue();
+                
+                code.split('\n').some((i) =>{
+                    if (i.startsWith("set")){
+                        suggestions.push({
+                        label: i.split(" ")[1]+" (variable)",
+                        kind: 4,
+                        insertText: "|"+i.split(" ")[1],
+                        documentation: {
+                        value: i,
+                        isTrusted: true,
+            },
+                });
+
+                    }
+                }                )
+                
+                suggestions.push({
+                        label: "return",
+                        kind: 0,
+                        insertText: "return",
+                });
+                return {
+                    suggestions: suggestions,
+                };
+            }
+        });
+
+
+
+monaco.languages.registerHoverProvider('ritutoscript', {
+    provideHover: function (model, position) {
+        const wordAtPosition = model.getWordAtPosition(position);
+        if (wordAtPosition) {
+            const word = wordAtPosition.word;
+            let details = '';
+            if (word == "stop") {
+                details = "コードを止めます";
+            }
+            if (word == "set") {
+                details = "変数を設定します\n例: set test = text";
+            }
+            if (word == "log") {
+                details = "変数を出力します\n例: log message";
+            }        else if (word == "if") {
+                        details = "条件分岐を行います\n例: if (条件) { コード }";
+ 
+                    }else if (word == "return"){
+                        details = "コードを最初っから実行できます";
+
+                    }
+            
+
+            details = details.replace(/\n/g, '\n\n');
+
+            return {
+                range: new monaco.Range(position.lineNumber, wordAtPosition.startColumn, position.lineNumber, wordAtPosition.endColumn),
+                contents: [{ value: details, isTrusted: true }],
+            };
+        }
+
+        return null;
+    }
+});
+
+
+
+        monaco.editor.setTheme('ritutoTheme');
+        
+        editor.onDidChangeModelContent(function(event) {
+            const position = editor.getPosition();
+            const textUntilPosition = editor.getModel().getValueInRange({ startLineNumber: position.lineNumber, startColumn: 1, endLineNumber: position.lineNumber, endColumn: position.column });
+            if (textUntilPosition.endsWith('|')) {
+                editor.trigger('custom-trigger', 'editor.action.triggerSuggest', {});
+            }
+        });
+var tobasu = false
+        async function executeCode(code,i) {
+            if (code.startsWith("log")) {
+                log(evalLog(code.replace("log ", "")));
+            } else if (code.startsWith("set")) {
+                setVariable(code.replace("set ", ""),i+1);
+            }else if (code == "stop"){
+                return "stop"
+            } else if (code.startsWith("if")) {
+        const condition = code.replace("if ", "");
+        tobasu = await evalCondition(condition,i+1)
+}else if (code == "return"){
+    return "return"
+}
+        }
+
+
+editor.getModel().onDidChangeContent(function(event) {
+    const code = editor.getValue();
+    document.getElementById('output').innerHTML = '';
+    const lines = code.split('\n');
+    var err = 0
+    for (var i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!(line.startsWith("set")||line.startsWith("log")||line=="stop"||line==""||line.startsWith("if")||line.startsWith("}")||line=="return")){
+            err = err + 1
+
+            showErrorMessage(i+1,`不明な文字${line.split(" ")[0]}\n${line.split(" ")[0]}は存在しません`);
+            continue
+        }
+        if (err == 0){
+            clearErrorMessages()
+        }
+    }
+
+});
+function callbackFn ( event ) {
+	event.returnValue = "保存してない可能性" ;
+}
+
+window.onbeforeunload = callbackFn ;
+function showErrorMessage(lineNumber, message) {
+    monaco.editor.setModelMarkers(editor.getModel(), "owner", [
+        {
+            startLineNumber: lineNumber,
+            startColumn: 1,
+            endLineNumber: lineNumber,
+            endColumn: editor.getModel().getLineMaxColumn(lineNumber),
+            message: message,
+            severity: monaco.MarkerSeverity.Error
+        }
+    ]);
+}
+
+document.getElementById('saveButton').addEventListener('click', function() {
+            saveFile();
+});
+document.getElementById('stopButton').addEventListener('click', function() {
+    reset()
+    
+            stop = true
+            reset()
+            stop = true
+            document.getElementById('runButton').disabled = false
+});
+        document.getElementById('loadButton').addEventListener('click', function() {
+            loadFile();
+        });
+
+function saveFile() {
+            const code = editor.getValue();
+            const blob = new Blob([code], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${prompt("ファイル名を入力してください","code")}.ritutoscript`;
+            if (link.download == null) return false
+            link.click();
+        }
+        function loadFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.ritutoscript';
+            input.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (!confirm("ファイルを置き換えますか？")) return false
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        const code = reader.result;
+                        editor.setValue(code);
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            input.click();
+        }
+
+        function sleep(msec) {
+   return new Promise(function(resolve) {
+
+      setTimeout(function() {resolve()}, msec);
+
+   })
+}
+function clearErrorMessages() {
+    monaco.editor.setModelMarkers(editor.getModel(), "owner", []);
+}
+
+        document.getElementById('runButton').addEventListener('click', async function() {
+            document.getElementById('runButton').disabled = true
+            console.log("ritutoscript v1.5で実行します")
+            await reset()
+            runcode()
+        });
+        async function runcode(){
+            tobasu = false
+            var a = true
+            var code = editor.getValue();
+            document.getElementById('output').innerHTML = '';
+            var lines = code.split('\n');
+            for (var i = 0; i < lines.length; i++) {
+                if (stop) {
+                    stop = false
+                    break;
+                }
+                if (lines[i] == "}") tobasu = false
+                if (tobasu) continue
+                const kekka = await executeCode(lines[i],i);
+                if (kekka == "stop"){
+                    break;
+                }else if (kekka == "return"){
+                    runcode()
+                    a = false
+                    break;
+                }
+                await sleep(10)
+                
+            }
+            if (a) document.getElementById('runButton').disabled = false
+            if (a) log("処置が完了しました")
+
+        }
+        async function log(message) {
+
+             document.getElementById('log').value =  message + '\n' +  document.getElementById('log').value;
+}
+    });
+    
+
+</script>
+<button id="runButton" class="runButton">実行</button>
+<button id="stopButton" class="stopButton">止める</button>
+
+<button onclick="document.getElementById('log').value =``" id="clear" class="clear">ログを消す</button>
+<button id="saveButton" class="saveButton">セーブ</button>
+<button id="loadButton" class="loadButton">ロード</button>
+<div class="run" id="run">
+<textarea readonly id="log" placeholder="Console"></textarea>
+<button id="button1" class="button1" onclick="
+a()
+async function a(){
+    await buttonclick()
+}
+">button1</button>
+</div>
+</body>
+</html>
