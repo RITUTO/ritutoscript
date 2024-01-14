@@ -130,16 +130,14 @@
 <div id="editor"></div>
 <div id="output"></div>
 <script src="./runcode.js"></script>
-<script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+<script src="./node_modules/monaco-editor/min/vs/loader.js"></script>
 
 <script>
-    window.location.href = "ritutoscript"
 
     var 止める = false
-    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.27.0/min/vs' } });
-    require(['vs/editor/editor.main'], function() {
-
-        const editor = monaco.editor.create(document.getElementById('editor'), {
+require.config({ paths: { vs: "./node_modules/monaco-editor/min/vs" } });
+require(["vs/editor/editor.main"], function () {
+const editor = monaco.editor.create(document.getElementById('editor'), {
             value: [
                 'set message = hello',
                 'log |message+world',
@@ -174,14 +172,15 @@ monaco.editor.defineTheme('ritutoTheme', {
     base: 'vs-dark',  // Fix the typo here
     inherit: true,
     rules: [
-        { token: 'keyword', foreground: '800080', fontStyle: 'bold' },
-        { token: 'variable', foreground: 'FFD700' },
-        { token: 'string', foreground: 'FFFFFF' },
-        { token: 'set', foreground: '004C6D' },
-        { token: 'stop', foreground: 'ff0000' },
-        { token: 'return', foreground: 'FFD700' },
-        { token: 'if', foreground: '800080'},
-        { token: 'wait', foreground: 'FFD700' },
+    { token: 'keyword', foreground: '#800080', fontStyle: 'bold' },
+{ token: 'variable', foreground: '#FFD700' },
+{ token: 'string', foreground: '#FFFFFF' },
+{ token: 'set', foreground: '004C6D' },
+{ token: 'stop', foreground: 'ff0000' },
+{ token: 'return', foreground: 'FFD700' },
+{ token: 'if', foreground: '800080'},
+{ token: 'wait', foreground: 'FFD700' },
+
 
     ]
 });
