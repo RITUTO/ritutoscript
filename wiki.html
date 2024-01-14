@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>コード説明</title>
+    <h2 class="heading-41">コードの説明</h2>
+    <H1>log</H1>
+        <p>
+            
+            文字を表示するためのコード<br>
+            例
+            log text <br>
+            コンソロールにtestと表示させられる<br>
+            これは変数なども追加えます
+            set message = hello
+            log |message+world
+        </p>
+        <h1>set</h1>
+        <p>
+            変数を設定するためのコード例えば<br>
+            set test = text<br>
+            でtestにtextをいれれるまたこれには特別なワードがあるinputユザーに入力させれる<br>
+            例<br>
+            log あなたの名前は何ですか？<br>
+set name = input<br>
+log あなたの名前は+|name ですね<br>
+set num = 0<br>
+set num = ++<br>
+で1ずつ増やす<br>
+--で1ずつ減らす<br>
+        </p>
+
+<h1>if</h1>
+<p>
+    どのプログラミング言語おなじみ？のif<br>
+    if a = a {<br>
+        log aはaです<br>
+        }<br>
+        if a ! b {<br>
+        log aはbではありません<br>
+        }<br>
+    みたいな使い方<br>
+    if 式 {<br>
+        コード<br>
+    }
+</p><br>
+<h1>常に指定されてる変数</h1>
+<p>
+    |random<br>
+    常に 1~100の間の乱数が指定されてる<br>
+    |pressspace<br>
+    スペースキーが押されたかどうか<br>
+    if |pressspace = true {<br>
+        log スペースキーが押されました<br>
+        }<br>
+        return<br>
+        みたいな使い方をする<br>
+    </p>
+    <h1>ボタン系</h1><p>
+        名前を変えるとき<br>
+        set buttonname = buttontext<br>
+        でボタンの名前がbuttontextになります
+        初期はbutton1
+        ボタン検知
+        if |buttonisclick ! false {
+            log ボタンが押されました
+            }
+        return
+        でボタンを押すとボタンが押されたと通知されます
+    </p>
+    </div>
+</head>
+<body>
+    <style>
+        .heading-41 {
+    display: flex;
+    align-items: center;
+    padding: .5em .7em;
+    background-color: #f2f2f2;
+    color: #333333;
+}
+html {
+            background-color: #cae4ff;
+            color: #000000;
+        }
+.heading-41::before {
+    display: inline-block;
+    width: 5px;
+    height: 1.5em;
+    margin-right: .5em;
+    background-color: #2589d0;
+    content: '';
+}
+.read-more-3 {
+    position: relative;
+}
+
+.read-more-3 p {
+    position: relative;
+    max-height: 30px; /* 開く前に見せたい高さを指定 */
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: max-height 1s;
+}
+
+.read-more-3:has(:checked) p {
+    max-height: 100vh;
+}
+
+   
+ p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 10px;
+        }
+
+
+    </style>
+</body>
+</html>
