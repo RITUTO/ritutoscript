@@ -1,538 +1,114 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ritutoscriptコードエディター</title>
-    <button style="            padding: 10px 40px 10px 20px;
-    background-color: #4a90e2;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;" onclick="window.location.href = 'wiki.html'">wikiを見る</button>
-    <style>
-        #editor {
-            height: 400px;
-        }
-        #output {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #f0f0f0;
-        }
-        #run {
-            background-color: #8e8f91;
-            color: #000000;
-            height: 350px;
-            width: 110%;
-        }
-        #log {
-            height: 300px;
-            width: 100%;
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            overflow-y: auto;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
-            resize: vertical;
-        }
-        .runButton {
-            padding: 10px 40px 10px 20px;
-            background-color: #4a90e2;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-            background-image: url("./run.png");
-            background-size: 20px;
-            background-repeat: no-repeat;
-            background-position: 50px center;
-            padding-right: 50px;
-        }
-        
-        .clear {
-            padding: 10px 40px 10px 20px;
-            background-color: #4a90e2;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-            background-image: url("./clear.png");
-            background-size: 20px;
-            background-repeat: no-repeat;
-            background-position: 100px center;
-            padding-right: 50px;
-        }
-        .saveButton {
-            padding: 10px 40px 10px 20px;
-            background-color: #4a90e2;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-        }
-        .saveButton:disabled {
-            padding: 10px 40px 10px 20px;
-            background-color: #596777;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-        }
-        .stopButton {
-            padding: 10px 40px 10px 20px;
-            background-color: #4a90e2;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-            background-image: url("./stop.png");
-            background-size: 20px;
-            background-repeat: no-repeat;
-            background-position: 70px center;
-            padding-right: 50px;
-        }
-        .loadButton {
-            padding: 10px 40px 10px 20px;
-            background-color: #4a90e2;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-        }
-        .runButton:hover {
-            background-color: #3461a4;
-        }
-        .saveButton:hover {
-            background-color: #3461a4;
-        }
-        .stopButton:hover {
-            background-color: #3461a4;
-        }
-        .loadButton:hover {
-            background-color: #3461a4;
-        }
-        #clear:hover {
-            background-color: #3461a4;
-        }
-    </style>
-</head>
-<body>
-<div id="editor"></div>
-<div id="output"></div>
-<script src="./runcode.js"></script>
-<script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+//runcode.js
+var buttonisclick = false;
+var supesu = false;
+var variables = {"ramdom": Math.round(Math.random() * 100), "pressspace": supesu, "buttonname": "button1", "buttonisclick": buttonisclick};
 
-<script>
-    var 止める = false
-    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.27.0/min/vs' } });
-    require(['vs/editor/editor.main'], function() {
-
-const editor = monaco.editor.create(document.getElementById('editor'), {
-            value: [
-                'set message = hello',
-                'log |message+world',
-            ].join('\n'),
-            language: 'ritutoscript',
-        });
-
-        monaco.languages.register({
-            id: 'ritutoscript',
-            extensions: ['.rituto'],
-            aliases: ['Rituto Script', 'rituto'],
-            mimetypes: ['text/rituto']
-        });
-
-monaco.languages.setMonarchTokensProvider('ritutoscript', {
-            tokenizer: {
-        root: [
-        [/\b(wait)\b/, { token: 'wait' }],
-        [/\b(log)\b/, { token: 'keyword' }],
-        [/\b(set)\b/, { token: 'set' }],
-        [/\b(return)\b/, { token: 'return' }],
-        [/\b(stop)\b/, { token: 'stop' }],
-        [/\|([^\s|+]+)/, 'variable'],
-        [/\b(if)\b/, { token: 'if' }],
-        [/(\/\/.*)$/, { token: 'comment' }], 
-
-    ],
-        
-        
-    }
-});
-
-monaco.editor.defineTheme('ritutoTheme', {
-    base: 'vs-dark',  
-    inherit: true,
-    rules: [
-    { token: 'keyword', foreground: '#800080', fontStyle: 'bold' },
-{ token: 'variable', foreground: 'FFD700' },
-{ token: 'string', foreground: 'FFFFFF' },
-{ token: 'set', foreground: '004C6D' },
-{ token: 'stop', foreground: 'ff0000' },
-{ token: 'return', foreground: 'FFD700' },
-{ token: 'if', foreground: '800080'},
-{ token: 'wait', foreground: 'FFD700' },
-{ token: 'comment', foreground: '8bd897' },
-
-
-    ]
-});
-var stop = false
-monaco.languages.registerCompletionItemProvider('ritutoscript', {
-            provideCompletionItems: function(model, position) {
-                const textUntilPosition = model.getValueInRange({
-                    startLineNumber: position.lineNumber,
-                    startColumn: 1,
-                    endLineNumber: position.lineNumber,
-                    endColumn: position.column
-                });
-
-                const suggestions = [];
-
-                suggestions.push({
-                    label: 'log',
-                    kind: 1,
-                    insertText: 'log ',
-                });
-
-                suggestions.push({
-                    label: 'set',
-                    kind: 1,
-                    insertText: 'set ',
-                });
-
-                suggestions.push({
-                    label: 'stop',
-                    kind: 0,
-                    insertText: 'stop',
-                });
-                suggestions.push({
-                    label: 'if',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'if',
-                });
-                suggestions.push({
-                    label: 'input ユザーが入れた文字を変数に入れれます',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'input',
-                });
-                suggestions.push({
-                    label: 'set starter element',
-                    kind: 27,
-            insertText: 'set variablename = text',
-            documentation: {
-                        value: "setのサンプル\nset variablename = text",
-                        isTrusted: true,
-            },
-                });
-                suggestions.push({
-                    label: 'if starter element',
-                    kind: 4,
-            insertText: 'if a = a {\nlog aはaです\n}\nif a ! b {\nlog aはbではありません\n}',
-                         documentation: {
-                        value: "ifのサンプル\nif a = a {\nlog aはaです\n}\nif a ! b {\nlog aはbではありません\n}",
-                        isTrusted: true,
-                },
-                });
-                        suggestions.push({
-                        label: "ramdom"+" (variable)",
-                        kind: 4,
-                        insertText: "|ramdom",
-                        documentation: {
-                        value: "set ramdom = run.js(Math.round(Math.random() * 100))",
-                        isTrusted: true,
-            },})
-            suggestions.push({
-                        label: "buttonname"+" (variable)",
-                        kind: 4,
-                        insertText: "|buttonname",
-                        documentation: {
-                        value: "set buttonname = ボタン1",
-                        isTrusted: true,
-            },})
-            suggestions.push({
-                        label: "pressspace"+" (variable)",
-                        kind: 4,
-                        insertText: "|pressspace",
-                        documentation: {
-                        value: "set pressspace = run.js(supesu)",
-                        isTrusted: true,
-            },})
-            suggestions.push({
-                        label: "buttonisclick"+" (variable)",
-                        kind: 4,
-                        insertText: "|buttonisclick",
-                        documentation: {
-                        value: "set buttonisclick = run.js(buttonisclick)",
-                        isTrusted: true,
-            },})
-                const code = editor.getValue();
-                
-                code.split('\n').some((i) =>{
-                    if (i.startsWith("set")){
-                        suggestions.push({
-                        label: i.split(" ")[1]+" (variable)",
-                        kind: 4,
-                        insertText: "|"+i.split(" ")[1],
-                        documentation: {
-                        value: i,
-                        isTrusted: true,
-            },
-                });
-
-                    }
-                }                )
-                
-                suggestions.push({
-                        label: "return",
-                        kind: 0,
-                        insertText: "return",
-                });
-                return {
-                    suggestions: suggestions,
-                };
-            }
-        });
-
-
-
-monaco.languages.registerHoverProvider('ritutoscript', {
-    provideHover: function (model, position) {
-        const wordAtPosition = model.getWordAtPosition(position);
-        if (wordAtPosition) {
-            const word = wordAtPosition.word;
-            let details = '';
-            if (word == "stop") {
-                details = "コードを止めます";
-            }
-            if (word == "set") {
-                details = "変数を設定します\n例: set test = text";
-            }
-            if (word == "log") {
-                details = "変数を出力します\n例: log message";
-            }        else if (word == "if") {
-                        details = "条件分岐を行います\n例: if (条件) { コード }";
- 
-                    }else if (word == "return"){
-                        details = "コードを最初っから実行できます";
-
-                    }
-            
-
-            details = details.replace(/\n/g, '\n\n');
-
-            return {
-                range: new monaco.Range(position.lineNumber, wordAtPosition.startColumn, position.lineNumber, wordAtPosition.endColumn),
-                contents: [{ value: details, isTrusted: true }],
-            };
-        }
-
-        return null;
-    }
-});
-monaco.editor.setTheme('ritutoTheme');
-        
-editor.onDidChangeModelContent(function(event) {
-            const position = editor.getPosition();
-            const textUntilPosition = editor.getModel().getValueInRange({ startLineNumber: position.lineNumber, startColumn: 1, endLineNumber: position.lineNumber, endColumn: position.column });
-            if (textUntilPosition.endsWith('|')) {
-                editor.trigger('custom-trigger', 'editor.action.triggerSuggest', {});
-}});
-var tobasu = false
-        async function executeCode(code,i) {
-            if (code.startsWith("log")) {
-                log(evalLog(code.replace("log ", "")));
-            } else if (code.startsWith("set")) {
-                setVariable(code.replace("set ", ""),i+1);
-            }else if (code == "stop"){
-                return "stop"
-            } else if (code.startsWith("if")) {
-        const condition = code.replace("if ", "");
-        tobasu = await evalCondition(condition,i+1)
-}else if (code == "return"){
-    return "return"
-}}
-
-window.addEventListener('load', function(){
-            editor.setValue(window.localStorage.getItem("code") ?? [
-                'set message = hello',
-                'log |message+world',
-            ].join('\n'),);
-})
-editor.getModel().onDidChangeContent(function(event) {
-    const code = editor.getValue();
-    window.localStorage.setItem("code",code)
-
-    document.getElementById('output').innerHTML = '';
-    const lines = code.split('\n');
-    var err = 0
-    for (var i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (!(line.startsWith("set")||line.startsWith("log")||line=="stop"||line==""||line.startsWith("if")||line.startsWith("}")||line.startsWith("//")||line=="return")){
-            err = err + 1
-
-            showErrorMessage(i+1,`不明な文字${line.split(" ")[0]}\n${line.split(" ")[0]}は存在しません`);
-            continue
-        }
-        if (err == 0){
-            clearErrorMessages()
-        }
-    }
-
-});
-
-function showErrorMessage(lineNumber, message) {
-    monaco.editor.setModelMarkers(editor.getModel(), "owner", [
-        {
-            startLineNumber: lineNumber,
-            startColumn: 1,
-            endLineNumber: lineNumber,
-            endColumn: editor.getModel().getLineMaxColumn(lineNumber),
-            message: message,
-            severity: monaco.MarkerSeverity.Error
-        }
-    ]);
-}
-
-document.getElementById('saveButton').addEventListener('click', function() {
-            saveFile();
-});
-document.getElementById('stopButton').addEventListener('click', function() {
-    reset()
-    document.getElementById('editor').style = "display: block"
-
-    
-            stop = true
-            reset()
-            stop = true
-            document.getElementById('runButton').disabled = false
-});
-        document.getElementById('loadButton').addEventListener('click', function() {
-            loadFile();
-        });
-
-function saveFile() {
-            const code = editor.getValue();
-            const blob = new Blob([code], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${prompt("ファイル名を入力してください","code")}.ritutoscript`;
-            if (link.download == "null.ritutoscript") return false
-            link.click();
-        }
-        function loadFile() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.ritutoscript';
-            input.addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    if (!confirm("プログラムを置き換えますか？")) return false
-                    const reader = new FileReader();
-                    reader.onload = function() {
-                        const code = reader.result;
-                        editor.setValue(code);
-                    };
-                    reader.readAsText(file);
-                }
-            });
-            input.click();
-        }
-
-        function sleep(msec) {
-   return new Promise(function(resolve) {
-
-      setTimeout(function() {resolve()}, msec);
-
-   })
-}
-function clearErrorMessages() {
-    monaco.editor.setModelMarkers(editor.getModel(), "owner", []);
-}
-
-        document.getElementById('runButton').addEventListener('click', async function() {
-            document.getElementById('editor').style = "display: none"
-            document.getElementById('runButton').disabled = true
-            console.log("ritutoscript v1.6で実行します")
-            await reset()
-            runcode()
-        });
-        async function runcode(){
-            tobasu = false
-            var a = true
-            var code = editor.getValue();
-            document.getElementById('output').innerHTML = '';
-            var lines = code.split('\n');
-            for (var i = 0; i < lines.length; i++) {
-                if (lines[i].startsWith("//")) continue
-                if (stop) {
-                    document.getElementById('runButton').disabled = false
-                    stop = false
-                    break;
-                }
-                if (lines[i] == "}") tobasu = false
-                if (tobasu) continue
-                const kekka = await executeCode(lines[i],i);
-                if (kekka == "stop"){
-                    document.getElementById('editor').style = "display: block"
-                    break;
-                }else if (kekka == "return"){
-                    runcode()
-                    a = false
-                    break;
-                }
-                await sleep(10)
-                
-            }
-            if (a) document.getElementById('runButton').disabled = false
-            if (a) log("処置が完了しました\n5秒後にエディターを表示します")
-            if (a) await sleep(5000)
-            if (a) document.getElementById('editor').style = "display: block"
-
-        }
-        async function log(message) {
-
-             document.getElementById('log').value =  message + '\n' +  document.getElementById('log').value;
-}
+function evalLog(code) {
+    variables["ramdom"] = Math.round(Math.random() * 100);
+    code = code.replace(/\|(\w+)/g, (_, varName) => {
+        return variables[varName] !== undefined ? variables[varName] : varName;
     });
-    
-
-</script>
-<button id="runButton" class="runButton">実行</button>
-<button id="stopButton" class="stopButton">止める</button>
-
-<button onclick="document.getElementById('log').value =``" id="clear" class="clear">ログを消す</button>
-<button onclick="
-if (window.confirm(`エディターを初期化しますか?`)){
-    if  (window.confirm('これが最後の質問です本当に初期化しますか?')){
-        window.localStorage.setItem('code',[
-                'set message = hello',
-                'log |message+world',
-            ].join('\n'))
-    }
-    location.reload()
-}" id="clear" class="clear">初期化する</button>
-
-<button id="saveButton" class="saveButton">セーブ</button>
-<button id="loadButton" class="loadButton">ロード</button>
-<div class="run" id="run">
-<textarea readonly id="log" placeholder="Console"></textarea>
-<button id="button1" class="button1" onclick="
-a()
-async function a(){
-    await buttonclick()
+    return eval('`' + code + '`').replace("+", "").replace(/(\/\/.*)$/,"");
 }
-">button1</button>
-</div>
-</body>
-</html>
+
+async function reset() {
+    buttonisclick = false;
+    variables = {"ramdom": Math.round(Math.random() * 100), "pressspace": supesu, "buttonname": "button1", "buttonisclick": buttonisclick};
+}
+
+addEventListener("keydown", (event) => {
+    variables["buttonisclick"] = buttonisclick;
+
+    if (event.code == "Space") {
+        supesu = true;
+    }
+
+    variables["pressspace"] = supesu;
+    return false;
+});
+
+addEventListener("keyup", (event) => {
+    if (event.code == "Space") {
+        supesu = false;
+    }
+
+    variables["pressspace"] = supesu;
+    return false;
+});
+
+async function setVariable(code, i) {
+    variables["butt"] = supesu;
+    variables["ramdom"] = Math.round(Math.random() * 100);
+    variables["pressspace"] = supesu;
+    const match = code.match(/\s*(\w+)\s*=\s*(\S+)\s*/);
+    variables["buttonisclick"] = buttonisclick;
+
+    if (match) {
+        [, varName, value] = match;
+        value = value.replace(/\|(\w+)/g, (_, varName) => {
+            return variables[varName] !== undefined ? variables[varName] : varName;
+        });
+        if (value == "input") {
+            variables[varName] = code.replace("input", window.prompt("文字を入力してください").toLowerCase()).replace("++", Math.floor(variables[varName]) + 1).replace("--", Math.floor(variables[varName]) - 1).replace(/(\/\/.*)$/,"").replace("+", "");
+        } else {
+            variables[varName] = value.replace("++", Math.floor(variables[varName]) + 1).replace("--", Math.floor(variables[varName]) - 1).replace(/(\/\/.*)$/,"").replace("+", "");
+        }
+    }
+
+    if (varName == "buttonname") {
+        if (variables["buttonname"].indexOf("</") != -1 && variables["buttonname"].indexOf(">") != -1) {
+            log(`エラー:ボタンの名前にhtmlコードは埋め込めません\n${value}は存在しません\n code.ritutoscript:${i}:${code.indexOf(variables["buttonname"])}\nボタンの名前変え処理に失敗しました`);
+        } else {
+            document.getElementById('button1').innerHTML = variables["buttonname"];
+        }
+    }
+}
+
+async function log(message) {
+    variables["buttonisclick"] = buttonisclick;
+    variables["pressspace"] = supesu;
+
+    document.getElementById('log').value = message + '\n' + document.getElementById('log').value;
+}
+
+/** @param {String} condition  */
+async function evalCondition(condition, i) {
+    variables["buttonisclick"] = buttonisclick;
+    variables["pressspace"] = supesu;
+    variables["ramdom"] = Math.round(Math.random() * 100);
+
+    if (condition.split(" ")[1] != "=" && condition.split(" ")[1] != "!") {
+        log(`エラー:式が不明です\n${condition.split(" ")[1]}は存在しません\n code.ritutoscript:${i}:${condition.indexOf(condition.split(" ")[1])}\n状況ifの処理に失敗しました`);
+    }
+
+    if (condition.split(" ")[3] != "{") {
+        log(`エラー:{がありません\n{の場所を${condition.split(" ")[3] ?? "空白"}にすることはできません code.ritutoscript:${i}:${condition.indexOf(condition.split(" ")[1])}\n状況ifの処理に失敗しました`);
+    }
+
+    const m1 = condition.split(" ")[0].replace(/(\/\/.*)$/,"").replace(/\|(\w+)/g, (_, varName) => {
+        return variables[varName] !== undefined ? variables[varName] : varName;
+    }).replace("+", "");
+    const m2 = condition.split(" ").replace(/(\/\/.*)$/,"")[2].replace(/\|(\w+)/g, (_, varName) => {
+        return variables[varName] !== undefined ? variables[varName] : varName;
+    }).replace("+", "");
+
+    if (condition.split(" ")[1] == "=") {
+        return m1 != m2;
+    } else if (condition.split(" ")[1] == "!") {
+        return m1 == m2;
+    }
+}
+
+async function buttonclick() {
+    buttonisclick = true;
+    await sleep(20);
+    buttonisclick = false;
+}
+
+async function sleep(msec) {
+    return new Promise(function (resolve) {
+
+        setTimeout(function () { resolve() }, msec);
+
+    })
+}
