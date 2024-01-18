@@ -23,7 +23,7 @@
         #run {
             background-color: #8e8f91;
             color: #000000;
-            height: 350px;
+            height: 450px;
             width: 110%;
         }
         #log {
@@ -253,6 +253,47 @@ monaco.languages.registerCompletionItemProvider('ritutoscript', {
                         isTrusted: true,
             },})
             suggestions.push({
+                        label: "true"+" (variable)",
+                        kind: 4,
+                        insertText: "|true",
+                        documentation: {
+                        value: "set true = true",
+                        isTrusted: true,
+            },})
+            suggestions.push({
+                        label: "buttonisshow"+" (variable)",
+                        kind: 4,
+                        insertText: "|buttonisshow",
+                        documentation: {
+                        value: "set buttonisshow = |true",
+                        isTrusted: true,
+            },})
+            suggestions.push({
+                        label: "false"+" (variable)",
+                        kind: 4,
+                        insertText: "|false",
+                        documentation: {
+                        value: "set false = false",
+                        isTrusted: true,
+            },})
+            suggestions.push({
+                        label: "texttext"+" (variable)",
+                        kind: 4,
+                        insertText: "|texttext",
+                        documentation: {
+                        value: "set texttext = ",
+                        isTrusted: true,
+            },})
+            suggestions.push({
+                        label: "title"+" (variable)",
+                        kind: 4,
+                        insertText: "|title",
+                        documentation: {
+                        value: "set title = ",
+                        isTrusted: true,
+            },})
+            
+            suggestions.push({
                         label: "buttonname"+" (variable)",
                         kind: 4,
                         insertText: "|buttonname",
@@ -277,9 +318,18 @@ monaco.languages.registerCompletionItemProvider('ritutoscript', {
                         isTrusted: true,
             },})
                 const code = editor.getValue();
-                
+                var setteizumi = ["true","false","title","buttonisclick","pressspace","random","buttonname","buttonisshow"]
                 code.split('\n').some((i) =>{
+                    var yameru = false
+                    setteizumi.some((index) =>{
+                        if (index ==i.split(" ")[1]){
+                            yameru = true
+                            return true
+                        }
+                    })
+                    if (yameru) return
                     if (i.startsWith("set")){
+                        setteizumi.push(i.split(" ")[1])
                         suggestions.push({
                         label: i.split(" ")[1]+" (variable)",
                         kind: 4,
@@ -409,7 +459,6 @@ document.getElementById('saveButton').addEventListener('click', function() {
 });
 document.getElementById('stopButton').addEventListener('click', function() {
     reset()
-    document.getElementById('editor').style = "display: block"
 
     
             stop = true
@@ -463,16 +512,14 @@ function clearErrorMessages() {
         document.getElementById('runButton').addEventListener('click', async function() {
             document.getElementById('editor').style = "display: none"
             document.getElementById('runButton').disabled = true
-            console.log("ritutoscript v1.6で実行します")
+            console.log("ritutoscript v1.8で実行します")
             await reset()
-            runcode()
+            runcode(editor.getValue().split('\n'))
         });
-        async function runcode(){
+        async function runcode(lines){
             tobasu = false
             var a = true
-            var code = editor.getValue();
             document.getElementById('output').innerHTML = '';
-            var lines = code.split('\n');
             for (var i = 0; i < lines.length; i++) {
                 if (lines[i].startsWith("//")) continue
                 if (stop) {
@@ -480,18 +527,20 @@ function clearErrorMessages() {
                     stop = false
                     break;
                 }
-                if (lines[i] == "}") tobasu = false
+                if (lines[i].indexOf("}") != "-1") tobasu = false
                 if (tobasu) continue
                 const kekka = await executeCode(lines[i],i);
+                
                 if (kekka == "stop"){
                     document.getElementById('editor').style = "display: block"
                     break;
                 }else if (kekka == "return"){
-                    runcode()
+                    document.getElementById('editor').style = "display: none"
+                    runcode(lines)
                     a = false
                     break;
                 }
-                await sleep(10)
+                await sleep(5)
                 
             }
             if (a) document.getElementById('runButton').disabled = false
@@ -533,6 +582,7 @@ async function a(){
     await buttonclick()
 }
 ">button1</button>
+<p id="text1"></p>
 </div>
 </body>
 </html>
