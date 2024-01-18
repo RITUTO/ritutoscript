@@ -1,7 +1,8 @@
 //runcode.js
 var buttonisclick = false;
 var supesu = false;
-var variables = {"ramdom": Math.round(Math.random() * 100), "pressspace": supesu, "buttonname": "button1", "buttonisclick": buttonisclick};
+var variables = {"ramdom": Math.round(Math.random() * 100), "pressspace": supesu, "buttonname": "button1", "buttonisclick": buttonisclick,"true":true,"false":false,title:"","buttonisshow":"true","texttext":"",};
+document.title= "ritutoscriptコードエディター|"+variables["title"] ?? ""
 
 function evalLog(code) {
     variables["ramdom"] = Math.round(Math.random() * 100);
@@ -12,9 +13,23 @@ function evalLog(code) {
 }
 
 async function reset() {
+    document.getElementById("button1").style = "display: block"
+
+    document.title= "ritutoscriptコードエディター"
     buttonisclick = false;
-    variables = {"ramdom": Math.round(Math.random() * 100), "pressspace": supesu, "buttonname": "button1", "buttonisclick": buttonisclick};
+    variables = {"ramdom": Math.round(Math.random() * 100), "pressspace": supesu, "buttonname": "button1", "buttonisclick": buttonisclick,"true":true,"false":false,title:"","buttonisshow":"true","texttext":""};
+    if (variables["buttonname"].indexOf("</") != -1 && variables["buttonname"].indexOf(">") != -1) {
+        log(`エラー:ボタンの名前にhtmlコードは埋め込めません\n code.ritutoscript:${i}:${code.indexOf(variables["buttonname"])}\nボタンの名前変え処理に失敗しました`);
+    } else {
+        document.getElementById('button1').innerHTML = variables["buttonname"];
+    }
+    if (variables["texttext"].indexOf("</") != -1 && variables["texttext"].indexOf(">") != -1) {
+        log(`エラー:テキストにhtmlコードは埋め込めません\ncode.ritutoscript:${i}:${code.indexOf(variables["texttext"])}\nテキスト変え処理に失敗しました`);
+    } else {
+        document.getElementById('text1').innerHTML = variables["texttext"];
+    }
 }
+
 
 addEventListener("keydown", (event) => {
     variables["buttonisclick"] = buttonisclick;
@@ -35,7 +50,6 @@ addEventListener("keyup", (event) => {
     variables["pressspace"] = supesu;
     return false;
 });
-
 async function setVariable(code, i) {
     variables["butt"] = supesu;
     variables["ramdom"] = Math.round(Math.random() * 100);
@@ -45,6 +59,10 @@ async function setVariable(code, i) {
 
     if (match) {
         [, varName, value] = match;
+        if (varName == "true"||varName == "false"||varName == "true"||varName == "random"||varName == "pressspace"||varName == "buttonisclick"){
+            log(`エラー${varName}は読み取り専用ですcode.ritutoscript:${i}:${`set ${code}`.indexOf(varName)}\n状況変数の変更に失敗しました`)
+            return false
+        }
         value = value.replace(/\|(\w+)/g, (_, varName) => {
             return variables[varName] !== undefined ? variables[varName] : varName;
         });
@@ -57,10 +75,24 @@ async function setVariable(code, i) {
 
     if (varName == "buttonname") {
         if (variables["buttonname"].indexOf("</") != -1 && variables["buttonname"].indexOf(">") != -1) {
-            log(`エラー:ボタンの名前にhtmlコードは埋め込めません\n${value}は存在しません\n code.ritutoscript:${i}:${code.indexOf(variables["buttonname"])}\nボタンの名前変え処理に失敗しました`);
+            log(`エラー:ボタンの名前にhtmlコードは埋め込めません\ncode.ritutoscript:${i}:${code.indexOf(variables["buttonname"])}\nボタンの名前変え処理に失敗しました`);
         } else {
             document.getElementById('button1').innerHTML = variables["buttonname"];
         }
+    }
+    if (varName == "texttext") {
+        if (variables["texttext"].indexOf("</") != -1 && variables["texttext"].indexOf(">") != -1) {
+            log(`エラー:テキストにhtmlコードは埋め込めません\ncode.ritutoscript:${i}:${code.indexOf(variables["texttext"])}\mテキスト変え処理に失敗しました`);
+        } else {
+            document.getElementById('text1').innerHTML = variables["texttext"];
+        }
+    }
+    document.title= "ritutoscriptコードエディター|"+variables["title"] ?? ""
+    if (variables["buttonisshow"] == "true"){
+        document.getElementById("button1").style = "display: block"
+    }else{
+        document.getElementById("button1").style = "display: none"
+
     }
 }
 
@@ -81,9 +113,7 @@ async function evalCondition(condition, i) {
         log(`エラー:式が不明です\n${condition.split(" ")[1]}は存在しません\n code.ritutoscript:${i}:${condition.indexOf(condition.split(" ")[1])}\n状況ifの処理に失敗しました`);
     }
 
-    if (condition.split(" ")[3] != "{") {
-        log(`エラー:{がありません\n{の場所を${condition.split(" ")[3] ?? "空白"}にすることはできません code.ritutoscript:${i}:${condition.indexOf(condition.split(" ")[1])}\n状況ifの処理に失敗しました`);
-    }
+
 
     const m1 = condition.split(" ")[0].replace(/\|(\w+)/g, (_, varName) => {
         return variables[varName] !== undefined ? variables[varName] : varName;
@@ -107,7 +137,6 @@ async function buttonclick() {
 
 async function sleep(msec) {
     return new Promise(function (resolve) {
-
         setTimeout(function () { resolve() }, msec);
 
     })
