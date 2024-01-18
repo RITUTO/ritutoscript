@@ -48,14 +48,23 @@ set num = ++<br>
 <h1>常に指定されてる変数</h1>
 <p>
     |random<br>
-    常に 1~100の間の乱数が指定されてる<br>
+    常に 1~100の間の乱数が指定されてる(読み取り専用)<br>
     |pressspace<br>
-    スペースキーが押されたかどうか<br>
+    スペースキーが押されたかどうか(読み取り専用)<br>
     if |pressspace = true {<br>
-        log スペースキーが押されました<br>
+        log スペースキーが押されました(読み取り専用)<br>
         }<br>
         return<br>
         みたいな使い方をする<br>
+        |true<br>
+        trueが入ってる(読み取り専用)<br>
+        |false<br>
+        falseが入ってる(読み取り専用)<br>
+        |title<br>
+        ページのタイトル<br>
+        set title = testみたいな感じで変えれる<br>
+        |text テキストを表示させれます<br>
+        テキストの位置はボタンの下です<Br>
     </p>
     <h1>ボタン系</h1><p>
         名前を変えるとき<br>
@@ -68,14 +77,13 @@ set num = ++<br>
             }<br>
         return<br>
         でボタンを押すとボタンが押されたと通知されます<br>
-    </p>
+        buttonisshow変数trueかfalseで変えれる<br>
+        trueだと表示falseまたは何かの文字だと非表示
+        </p>
     <h1>コメント</h1>
     <p>
         jsと同じように//でコメントができます<br>
-        ただしlog a //コメント<br>
-        のようにするa //コメント<br>
-        とコンソロールに出ます<br>
-        つまり何もない行に書く必要があります
+        log helloworld //これはhellowordのコードです
     </p>
 </div>
 </head>
